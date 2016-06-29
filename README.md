@@ -29,7 +29,8 @@ MQLight is designed for use in games but can be used just about anywhere messagi
     - Freshly inserted messages are held out of the main queues until the Update cycle is called. This keeps things snappy.
     
 6. Thread safe
-    - Makes use of distinct C# locks for inerting, removing and updating.  
+    - Makes use of distinct C# locks for inserting, removing and updating. This keeps things safe and snappy. 
+
     
 
 ## Limitations
