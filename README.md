@@ -100,7 +100,7 @@ For games, make sure to call Update() at the very start of your game's principal
                     {
                         MQ.Default.Enqueue(-1, -1,-1, "Goodbye!");
                     
-                        // update one last time so message propagagte 
+                        // update one last time so message propagates 
                         MQ.Default.Update();
                         break;
                     }
