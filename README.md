@@ -55,7 +55,8 @@ remove it, or 'false' to leave it there. Leaving messages in queue is a great wa
             return true;  // returning true removes the message.
         }
 
-Subscribers should not invoke methods on the queue. They should simply process each message as they are received.
+Subscribers should not read more messages from the queue. They should simply process each message as they are received. Subscribers are
+of course free to enqueue new messages. 
 
 
 ## Usage / API
