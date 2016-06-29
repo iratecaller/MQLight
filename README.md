@@ -69,65 +69,67 @@ MQLight is very easy to use. Check out the demo app for now.
 NOTE: For this example, the Update() method is called in a thread. MQLight is thread safe but your game however should never do this.
 For games, make sure to call Update() at the very start of your game's principal update loop.
 
-    using MQLight;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    
-    namespace MQLightDemo
-    {
-        public class PubSubDemo
+        using MQLight;
+        using System;
+        using System.Collections.Generic;
+        using System.Linq;
+        using System.Text;
+        using System.Threading.Tasks;
+        
+        namespace MQLightDemo
         {
-            static async Task QueueUpdater()
+            public class PubSubDemo
             {
-                double t = 0;
-                DateTime last = DateTime.Now;
-                double timer = 5.0;
-                while (true)
+                static async Task QueueUpdater()
                 {
-    
-    
-                    await Task.Delay(1000);
-                    DateTime cur = DateTime.Now;
-                    t = (cur - last).TotalSeconds;
-    
-                    last = cur;
-                    Console.WriteLine("Refresh delta: " + t);
-                    timer -= t;
-                    if (timer < 0)
+                    double t = 0;
+                
+                    DateTime last = DateTime.Now;
+                    double timer = 5.0;
+                    while (true)
                     {
-                        MQ.Default.Enqueue(-1, -1,-1, "Goodbye!");
-                    
-                        // update one last time so message propagates 
+        
+                        // wait a hundred ms, then subtract time delta from countdown timer.
+                        await Task.Delay(100);
+                        DateTime cur = DateTime.Now;
+                        t = (cur - last).TotalSeconds;
+                        last = cur;
+                        timer -= t;
+                        
+                        // that's it we're done.
+                        if (timer < 0)
+                        {
+                            MQ.Default.Enqueue(-1, -1,-1, "Goodbye!");
+                        
+                            // update one last time so message propagates 
+                            MQ.Default.Update();
+                            break;
+                        }
+                        
+                        MQ.Default.Enqueue(-1, -1, -1, "Hello!");
                         MQ.Default.Update();
-                        break;
                     }
-                    MQ.Default.Enqueue(-1, -1, -1, "Hello!");
-                    MQ.Default.Update();
+                    Console.WriteLine("Queue updater has shut down.");
+        
                 }
-                Console.WriteLine("Queue updater has shut down.");
-    
-            }
-            public static void Run()
-            {
-                MQ.Default.Purge();
-    
-                MQ.Default.Subscribe(SubscriptionType.ALL, 0, GotMessage);
-                var task = Task.Run(() => QueueUpdater());
-    
-                Task.WaitAll(task);
-                Console.WriteLine("Pub Sub demo complete.");
-            }
-    
-            private static bool GotMessage(Message m)
-            {
-                Console.WriteLine("Got message \"{0}\" and removing it.", (string)m.message);
-                return true;
+                public static void Run()
+                {
+                    MQ.Default.Purge();
+        
+                    MQ.Default.Subscribe(SubscriptionType.ALL, 0, GotMessage);
+                    var task = Task.Run(() => QueueUpdater());
+        
+                    Task.WaitAll(task);
+                    Console.WriteLine("Pub Sub demo complete.");
+                }
+        
+                private static bool GotMessage(Message m)
+                {
+                    Console.WriteLine("Got message \"{0}\" and removing it.", (string)m.message);
+                    return true;
+                }
             }
         }
-    }
 
 ## Example 2 - Enqueue / Dequeue
 
@@ -156,6 +158,15 @@ This demo runs when Run() is invoked.
               static int GREETING = 1000;
               static int SHUTDOWN = 2000;
       
+              public static void Run()
+              {
+                  var ta = Task.Run(() => WorkerA());
+                  var tb = Task.Run(() => WorkerB());
+                  var tc = Task.Run(() => QueueUpdater());
+      
+                  Task.WaitAll(ta, tb, tc);
+      
+              }
               static async Task WorkerA()
               {
                   Random r = new Random(12312);
@@ -229,40 +240,37 @@ This demo runs when Run() is invoked.
               {
                   double t = 0;
                   DateTime last = DateTime.Now;
-                  double timer = 5.0;
+                  double timer = 5.0; // run for 5 seconds;
+                  
                   while (true)
                   {
       
-      
-                      await Task.Delay(1000);
+                      // wait 100 ms, then subtract the time delta from the countdown timer.
+                      await Task.Delay(100);
                       DateTime cur = DateTime.Now;
                       t = (cur - last).TotalSeconds;
-      
                       last = cur;
-                      Console.WriteLine("Refresh delta: " + t);
                       timer -= t;
+                      
+                      // once the timer is done, so are we.
                       if (timer < 0)
                       {
+                          // send the shutdown messages and bail out.
                           MQ.Default.Enqueue(-1, ID_QUEUE_A, SHUTDOWN, null);
                           MQ.Default.Enqueue(-1, ID_QUEUE_B, SHUTDOWN, null);
-                          // update one last time so message propagagte 
+                          // IMPORTANT:  update one last time so message propagagte 
                           MQ.Default.Update();
                           break;
                       }
+                      
+                      
                       MQ.Default.Update();
                   }
                   Console.WriteLine("Queue updater has shut down.");
       
               }
-              public static void Run()
-              {
-                  var ta = Task.Run(() => WorkerA());
-                  var tb = Task.Run(() => WorkerB());
-                  var tc = Task.Run(() => QueueUpdater());
-      
-                  Task.WaitAll(ta, tb, tc);
-      
-              }
+              
+              
           }
       }
 
