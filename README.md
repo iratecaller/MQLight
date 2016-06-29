@@ -32,6 +32,18 @@ MQLight is designed for use in games but can be used just about anywhere messagi
     - Makes use of distinct C# locks for inerting, removing and updating.  
     
 
+## Limitations
+
+This version does not support purging 'old' messages automatically, or moving messages to a dead letter queue. That is to say that if your app/game ignores messages, or forgets to check certain queues, then you can have a surprise when you run out of memory!
+
+The reasons MQLight doesn't support this is to make it as responsive as possible.  
+
+I have no plans to support this mechanism for MQLight. I have have a more enterpris-y Message Queue that is backed by SQL Server and supports expiration, dead letter queues and all that typical enterprise capability. The reason why enterprise Message Queue system are so bloated, is that they absolutely need to guarantee that messages get delivered. IBM WebShpere MQ, Rabbit MQ, and Microsoft's MSMQ are all fantastic products which I love using, but, for most client-side apps like games, these aren't necessary.
+
+You wouldn't use MSMQ for games. It's an awesome product, but it's just not designed for this purpose.
+Similarly, you wouldn't want to use MQLight on a government social security server because it cannot guarantee delivery.
+
+
 ## License
 
 Completely free to use for whatever purpose. I make no warranties.
