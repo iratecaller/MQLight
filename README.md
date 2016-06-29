@@ -3,6 +3,35 @@
 
 MQLight is designed for use in games but can be used just about anywhere messaging is required within your application.
 
+## Features
+
+1. Game developer friendly! (Read: Fast, Easy, Small, and Predictable) 
+    
+     - I designed it for games, but have used it in business apps too. Yawn.
+
+2. Publisher / Subscriber support
+    
+    - Can choose to subscribe to all messages, messages of a certain type, or messages sent to specific destinations.
+    - Subscribers can leave messages in queue and act as monitors
+    
+3. Source / Destintation queue routing
+
+    - When enqueueing / dequeueing messages, target queues are specified. 
+    - Support for any number of destination queues (as expected)
+
+4. Simple and Unobtrusive. 
+
+    - minimalistic API with absolutely no intention of making it anymore complex.
+
+5. Fast (due to it's simple implementation.)
+
+    - It should be about as fast as possible since there is no "dead letter" management, message expiry and all that stuff.
+    - Freshly inserted messages are held out of the main queues until the Update cycle is called. This keeps things snappy.
+    
+6. Thread safe
+    - Makes use of distinct C# locks for inerting, removing and updating.  
+    
+
 ## License
 
 Completely free to use for whatever purpose. I make no warranties.
