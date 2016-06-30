@@ -103,7 +103,7 @@ of course free to enqueue new messages.
 
 ## Usage / API
 
-As mentioned, I'll create a Wiki when I get the chance. For now, the information in this readme should be enogh to get your started.
+As mentioned, I'll create a Wiki when I get the chance. For now, the information in this readme should be enough to get your started.
 
 MQLight is very easy to use. Check out the demo app for now.
 
